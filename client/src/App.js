@@ -69,6 +69,7 @@ function App() {
           </button>
         </div>
       </div>
+      <p style={{ position: "absolute", bottom: 0 }}>© youssefhabbachi</p>
     </div>
   );
 }

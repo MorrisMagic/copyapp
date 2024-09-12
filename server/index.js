@@ -10,7 +10,7 @@ connectDB();
 
 app.use(express.json());
 
-app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+app.use(cors({ credentials: true, origin: "https://copyapp-front2.onrender.com" }));
 
 app.get("/test", async (req, res) => {
   const data = await copy.find();

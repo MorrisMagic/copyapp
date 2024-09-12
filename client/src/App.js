@@ -27,6 +27,7 @@ function App() {
       alert("You're Link is empty");
     }
   }
+  console.log('render')
 
   const copyToClipboard = (link) => {
     navigator.clipboard

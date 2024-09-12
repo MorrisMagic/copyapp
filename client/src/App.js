@@ -9,7 +9,7 @@ function App() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:4000/test")
+      .get("https://copyapp-mazy.onrender.com/test")
       .then(({ data }) => {
         setData(data);
         setLoading(false);
@@ -19,8 +19,8 @@ function App() {
 
   function add() {
     if (text != "") {
-      axios.post("http://localhost:4000/test", { link: text });
-      axios.get("http://localhost:4000/delete");
+      axios.post("https://copyapp-mazy.onrender.com/test", { link: text });
+      axios.get("https://copyapp-mazy.onrender.com/delete");
 
       setText("");
     } else {

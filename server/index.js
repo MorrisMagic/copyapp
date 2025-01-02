@@ -1,37 +1,51 @@
-const express = require("express");
-const cors = require("cors");
+require("dotenv").config()
+const express = require('express');
+const { Server } = require('socket.io');
 const app = express();
-const PORT = process.env.PORT || 4000;
-require("dotenv").config();
-const connectDB = require("./connectDB");
-const copy = require("./model");
+const http = require('http');
+const port = process.env.PORT || 5000;
+const server = http.createServer(app);
+const io = new Server(server, { cors: { origin: 'https://copyapp-front2.onrender.com/' } });
+const mongoose = require('mongoose');
 
-connectDB();
+mongoose.connect(process.env.MONGO_URL);
 
-app.use(express.json());
-
-app.use(cors({ credentials: true, origin: "https://copyapp-front2.onrender.com" }));
-
-app.get("/test", async (req, res) => {
-  const data = await copy.find();
-  res.json(data);
+const msgSchema = new mongoose.Schema({
+  message: { type: String, required: true },
 });
 
-app.get("/delete", async (req, res) => {
+const Msg = mongoose.model('Message', msgSchema);
+
+// Function to delete all messages from the database
+const deleteAllMessages = async () => {
   try {
-    setTimeout(async () => {
-      const data = await copy.deleteMany();
-      res.json({ message: "All entries deleted", data });
-    }, 10000);
-  } catch (e) {
-    res.status(500).json({ message: e.message });
+    await Msg.deleteMany({}); // Delete all documents in the "Message" collection
+    console.log('All messages deleted from the database.');
+  } catch (error) {
+    console.error('Error deleting messages:', error);
   }
+};
+
+// Schedule deletion after 10 seconds
+setTimeout(deleteAllMessages, 10000); // 10 seconds = 10000 milliseconds
+
+io.on('connection', (socket) => {
+  console.log('User logged', socket.id);
+
+  socket.on('add-text', (text) => {
+    console.log(`User ${socket.id}:`, text);
+    const newmsg = new Msg({
+      message: text,
+    });
+    newmsg.save();
+    io.emit('all-text', newmsg);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+  });
 });
 
-app.post("/test", async (req, res) => {
-  const { link } = req.body;
-  const data = await copy.create({ link });
-  res.json(data);
+server.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
 });
-
-app.listen(PORT);

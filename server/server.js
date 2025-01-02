@@ -5,7 +5,7 @@ const app = express();
 const http = require('http');
 const port = process.env.PORT || 5000;
 const server = http.createServer(app);
-const io = new Server(server, { cors: { origin: '*' } });
+const io = new Server(server, { cors: { origin: 'https://copyapp-front2.onrender.com/' } });
 const mongoose = require('mongoose');
 
 mongoose.connect(process.env.MONGO_URL);
